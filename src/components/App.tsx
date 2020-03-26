@@ -1,20 +1,31 @@
-import React from 'react';
-import styled from 'styled-components';
+import React, { useState, useEffect } from 'react';
+
+import { Container } from './ui';
+import { getData } from '../data';
+import { Country } from '../types';
 
 interface AppProps {
   name: string;
 }
 
-type ContainerProps = {
-  padding?: string | 0;
-  margin?: string | 0;
-};
-
-export const Container = styled.div<ContainerProps>`
-  padding: ${props => ('padding' in props ? props.padding : '0')};
-  margin: ${props => ('margin' in props ? props.margin : 0)};
-`;
+const countries: string[] = ['CN', 'IT', 'BG'];
 
 export default function App({ name }: AppProps) {
-  return <Container padding="1em">Hello {name}!</Container>;
+  const [loading, isLoading] = useState<boolean>(true);
+  const [data, setData] = useState<Country[]>([]);
+  useEffect(() => {
+    Promise.all(countries.map(getData)).then(results => {
+      setData(results);
+      isLoading(false);
+    });
+  }, [setData]);
+
+  if (loading) {
+    return (
+      <Container padding="1em">
+        Loading data for {countries.join(', ')} ...
+      </Container>
+    );
+  }
+  return <Container padding="1em">Show me the data</Container>;
 }
