@@ -1,5 +1,13 @@
+const fs = require('fs');
 const { parse } = require('url');
 const superagent = require('superagent');
+
+const USE_MOCKS = true;
+const MOCKS = {
+  BG: JSON.parse(fs.readFileSync(`${__dirname}/mock/BG.json`).toString('utf8')),
+  CN: JSON.parse(fs.readFileSync(`${__dirname}/mock/CN.json`).toString('utf8')),
+  IT: JSON.parse(fs.readFileSync(`${__dirname}/mock/IT.json`).toString('utf8')),
+};
 
 function JSONResponse(res, data, status = 200) {
   res.setHeader('Content-Type', 'application/json');
@@ -19,16 +27,21 @@ module.exports = async function(req, res) {
     return JSONResponse(res, { error: 'Missing "country" parameter' }, 400);
   }
 
-  try {
-    const e = endpoint(query.country);
-    console.log(`Requesting: ${e}`);
-    superagent
-      .get(e)
-      .set('accept', 'json')
-      .end((err, data) => {
-        JSONResponse(res, data.body);
-      });
-  } catch (err) {
-    JSONResponse(res, { error: err }, err.status || 404);
+  if (USE_MOCKS && MOCKS[query.country]) {
+    console.log(`Mocking: ${query.country}`);
+    JSONResponse(res, MOCKS[query.country]);
+  } else {
+    try {
+      const e = endpoint(query.country);
+      console.log(`Requesting: ${e}`);
+      superagent
+        .get(e)
+        .set('accept', 'json')
+        .end((err, data) => {
+          JSONResponse(res, data.body);
+        });
+    } catch (err) {
+      JSONResponse(res, { error: err }, err.status || 404);
+    }
   }
 };

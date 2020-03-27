@@ -31,6 +31,7 @@
   "dependencies": {
     "@types/react": "16.9.19",
     "@types/react-dom": "16.9.5",
+    "@types/recharts": "1.8.9",
     "@types/styled-components": "4.4.2",
     "@types/webpack-env": "1.15.1",
     "@typescript-eslint/eslint-plugin": "2.19.2",
@@ -39,6 +40,7 @@
     "prop-types": "15.7.2",
     "react": "16.8.6",
     "react-dom": "16.8.6",
+    "recharts": "1.8.5",
     "styled-components": "5.0.0",
     "superagent": "5.2.2"
   },
