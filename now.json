@@ -5,7 +5,7 @@
     { "src": "api/*.js", "use": "@now/node" }
   ],
   "routes": [
-    { "src": "/api/summary", "dest": "/api/summary.js" },
+    { "src": "/api/countries", "dest": "/api/countries.js" },
     { "src": "/api", "dest": "/api/index.js" },
     { "src": "/(.*)", "dest": "/public/$1" }
   ]

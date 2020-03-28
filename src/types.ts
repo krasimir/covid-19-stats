@@ -13,3 +13,9 @@ export interface Country {
   dates: Covid[];
   pace: Record<string, Covid>;
 }
+
+export interface Summary {
+  confirmed: number;
+  deaths: number;
+  recovered: number;
+}

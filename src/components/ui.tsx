@@ -7,6 +7,7 @@ type StylesProps = {
   height?: string | 0;
   ta?: string;
   bg?: string;
+  columns?: string;
 };
 
 export const Container = styled.div<StylesProps>`
@@ -14,7 +15,7 @@ export const Container = styled.div<StylesProps>`
   margin: ${props => ('margin' in props ? props.margin : 0)};
   width: ${props => ('width' in props ? props.width : 'auto')};
   height: ${props => ('height' in props ? props.height : 'auto')};
-  background: ${props => ('bg' in props ? props.bg : 'auto')};
+  background: ${props => ('bg' in props ? props.bg : '')};
 `;
 
 export const Heading = styled.h2`
@@ -42,8 +43,6 @@ export const Text = styled.p<StylesProps>`
   margin: 0;
   padding: 0 0 1em 0;
   text-align: ${props => ('ta' in props ? props.ta : 'left')};
-  margin: 0 auto;
-  width: 600px;
 `;
 
 export const Link = styled.a`
@@ -56,4 +55,14 @@ export const Line = styled.hr`
   border-top: none;
   border-bottom: dotted 1px #999;
   margin: 1em 0;
+`;
+
+export const Grid = styled.div<StylesProps>`
+  display: grid;
+  grid-template-columns: ${props => props.columns};
+`;
+
+export const BigEmoji = styled.div<StylesProps>`
+  font-size: 3em;
+  text-align: ${props => ('ta' in props ? props.ta : 'left')};
 `;

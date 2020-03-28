@@ -30,6 +30,17 @@ function generateData(countries, data) {
   });
 }
 
+function getSummary(data) {
+  const total = { confirmed: 0, deaths: 0, recovered: 0 };
+  Object.keys(data).forEach(country => {
+    const last = data[country][data[country].length - 1];
+    total.confirmed += last.confirmed;
+    total.deaths += last.deaths;
+    total.recovered += last.recovered;
+  });
+  return total;
+}
+
 module.exports = async function(req, res) {
   const { query } = parse(req.url, true);
 
@@ -41,7 +52,10 @@ module.exports = async function(req, res) {
 
   if (USE_MOCKS) {
     console.log(`Mocking ...`);
-    JSONResponse(res, generateData(countries, timeseries));
+    JSONResponse(res, {
+      data: generateData(countries, timeseries),
+      summary: getSummary(timeseries),
+    });
   } else {
     try {
       const e = 'https://pomber.github.io/covid19/timeseries.json';
@@ -50,7 +64,10 @@ module.exports = async function(req, res) {
         .get(e)
         .set('accept', 'json')
         .end((err, data) => {
-          JSONResponse(res, generateData(countries, data));
+          JSONResponse(res, {
+            data: generateData(countries, data),
+            summary: getSummary(data),
+          });
         });
     } catch (err) {
       JSONResponse(res, { error: err }, err.status || 404);
