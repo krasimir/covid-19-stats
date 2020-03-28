@@ -5,6 +5,7 @@ import { Container, Heading, Text, Link, Line, Title } from './ui';
 import { getData, getCountries } from '../data';
 import { Country, Summary } from '../types';
 import GraphSummary from './GraphSummary';
+import GraphHospitalize from './GraphHospitalize';
 import GraphPace from './GraphPace';
 import Info from './Info';
 import TableSummary from './TableSummary';
@@ -68,6 +69,15 @@ export default function App({ name }: AppProps) {
           <Title>{formatCountries(countries)}</Title>
           <TableSummary data={data} />
           <Builder countries={allCountries} data={data} />
+        </Container>
+      </Container>
+      <Container padding="2em 0" bg="#fff">
+        <Container margin="0 auto" width="900px">
+          <Title>Hospitalized cases in {formatCountries(countries)}</Title>
+          <Text ta="center">
+            <small>confirmed - recovered = hospitalized</small>
+          </Text>
+          <GraphHospitalize data={data} />
         </Container>
       </Container>
       <Container padding="2em 0" bg="#d5f4f7">

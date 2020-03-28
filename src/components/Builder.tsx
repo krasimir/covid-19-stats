@@ -61,9 +61,7 @@ export default function Builder({ countries, data }: BuilderProps) {
       {tags.length > 0 ? (
         <Text ta="center" padding="1em 0 0 0">
           📌{'  '}
-          <Link href={link} target="_blank">
-            {link}
-          </Link>
+          <Link href={link}>{link}</Link>
         </Text>
       ) : (
         ''
