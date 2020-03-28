@@ -13,6 +13,7 @@ export async function getData(country: string): Promise<Country> {
         deaths: 0,
         recovered: 0,
       },
+      pace: {},
       dates: {},
     };
   }

@@ -1,4 +1,4 @@
-/* eslint-disable no-sequences */
+/* eslint-disable no-sequences, no-multi-assign */
 const types = ['confirmed', 'deaths', 'recovered'];
 
 function normalizeProvince(province, dates) {
@@ -11,6 +11,35 @@ function normalizeProvince(province, dates) {
     });
   });
 }
+function generatePace(dates) {
+  const pace = {};
+  const lastOne = {};
+  let isCounting = false;
+  let days = 0;
+  types.forEach(type => {
+    lastOne[type] = 0;
+  });
+  Object.keys(dates).forEach(date => {
+    if (types.some(type => dates[date][type] > 0)) {
+      isCounting = true;
+    }
+    if (isCounting) {
+      days += 1;
+      const key = `day${days}`;
+      types.forEach(type => {
+        if (!pace[key]) {
+          pace[key] = { date };
+          types.forEach(t => {
+            pace[key][t] = 0;
+          });
+        }
+        pace[key][type] = dates[date][type] - lastOne[type];
+        lastOne[type] = dates[date][type];
+      });
+    }
+  });
+  return pace;
+}
 
 module.exports = function(location, data) {
   const dates = {};
@@ -20,6 +49,7 @@ module.exports = function(location, data) {
   return {
     country: location.country,
     latest: data.latest,
+    pace: generatePace(dates),
     dates,
   };
 };

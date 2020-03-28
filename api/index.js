@@ -6,11 +6,9 @@ const locationsData = require('./locations.json');
 
 const USE_MOCKS = false;
 const MOCKS = {
-  30: JSON.parse(fs.readFileSync(`${__dirname}/mock/30.json`).toString('utf8')), // bg
-  49: JSON.parse(fs.readFileSync(`${__dirname}/mock/49.json`).toString('utf8')), // ch
-  137: JSON.parse(
-    fs.readFileSync(`${__dirname}/mock/137.json`).toString('utf8')
-  ), // it
+  BG: JSON.parse(fs.readFileSync(`${__dirname}/mock/BG.json`).toString('utf8')),
+  CN: JSON.parse(fs.readFileSync(`${__dirname}/mock/CN.json`).toString('utf8')),
+  IT: JSON.parse(fs.readFileSync(`${__dirname}/mock/IT.json`).toString('utf8')),
 };
 
 function JSONResponse(res, data, status = 200) {
@@ -38,13 +36,13 @@ module.exports = async function(req, res) {
 
   if (!location) {
     return JSONResponse(res, {
-      error: `No location found behind "${query.country}" value`,
+      error: `No location found "${query.country}"`,
     });
   }
 
-  if (USE_MOCKS && MOCKS[location.id]) {
+  if (USE_MOCKS && MOCKS[location.country_code]) {
     console.log(`Mocking: ${location.country}`);
-    JSONResponse(res, normalize(location, MOCKS[location.id]));
+    JSONResponse(res, normalize(location, MOCKS[location.country_code]));
   } else {
     try {
       const e = endpoint(location.country_code);

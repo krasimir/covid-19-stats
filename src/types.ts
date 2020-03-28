@@ -10,4 +10,5 @@ export interface Country {
   country: string;
   latest: Covid;
   dates: Record<string, Covid>;
+  pace: Record<string, Covid>;
 }
