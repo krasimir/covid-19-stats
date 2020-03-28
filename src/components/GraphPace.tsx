@@ -25,33 +25,38 @@ type GraphItem = {
 };
 
 export default function GraphPace({ data, types }: GraphSummaryProps) {
-  const graphData: GraphItem[] = [];
+  let graphData: GraphItem[] = [];
   const keys: string[] = [];
   data.forEach(c => {
     types.forEach(type => {
       keys.push(getGraphItemKey(c, type));
     });
     Object.keys(c.pace).forEach(day => {
-      const foundDate = graphData.find(({ x }) => x === day);
+      const foundDate = graphData.find(item => item.day === day);
+      const entry = c.pace[day];
       if (foundDate) {
         types.forEach(type => {
-          foundDate[getGraphItemKey(c, type)] = c.pace[day][type];
+          foundDate[getGraphItemKey(c, type)] = entry[type];
         });
       } else {
         const item: GraphItem = {};
-        item.x = day;
+        item.day = day;
         types.forEach(type => {
-          item[getGraphItemKey(c, type)] = c.pace[day][type];
+          item[getGraphItemKey(c, type)] = entry[type];
         });
         graphData.push(item);
       }
     });
   });
+  graphData = graphData.map(obj => {
+    obj.day = `Day ${obj.day.toString().replace('day', '')}`;
+    return obj;
+  });
   return (
     <Container margin="1em 0">
       <Text ta="center">Pace</Text>
       <LineChart width={900} height={400} data={graphData}>
-        <XAxis dataKey="x" interval="preserveStartEnd" />
+        <XAxis dataKey="day" interval="preserveStartEnd" />
         <YAxis />
         <CartesianGrid />
         <Tooltip />

@@ -6,6 +6,7 @@ type StylesProps = {
   width?: string | 0;
   height?: string | 0;
   ta?: string;
+  bg?: string;
 };
 
 export const Container = styled.div<StylesProps>`
@@ -13,6 +14,7 @@ export const Container = styled.div<StylesProps>`
   margin: ${props => ('margin' in props ? props.margin : 0)};
   width: ${props => ('width' in props ? props.width : 'auto')};
   height: ${props => ('height' in props ? props.height : 'auto')};
+  background: ${props => ('bg' in props ? props.bg : 'auto')};
 `;
 
 export const Heading = styled.h2`
@@ -21,6 +23,7 @@ export const Heading = styled.h2`
   line-height: 1.4em;
   margin: 0;
   padding: 0 0 1em 0;
+  text-align: center;
 `;
 
 export const Title = styled.h2`
@@ -29,15 +32,18 @@ export const Title = styled.h2`
   line-height: 1.6em;
   margin: 0;
   padding: 0 0 1em 0;
+  text-align: center;
 `;
 
 export const Text = styled.p<StylesProps>`
   font-family: 'Roboto', sans-serif;
   font-size: 1em;
-  line-height: 1.6em;
+  line-height: 1.3em;
   margin: 0;
   padding: 0 0 1em 0;
   text-align: ${props => ('ta' in props ? props.ta : 'left')};
+  margin: 0 auto;
+  width: 600px;
 `;
 
 export const Link = styled.a`

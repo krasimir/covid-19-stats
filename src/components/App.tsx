@@ -6,6 +6,7 @@ import { getData } from '../data';
 import { Country } from '../types';
 import GraphSummary from './GraphSummary';
 import GraphPace from './GraphPace';
+import Info from './Info';
 
 interface AppProps {
   name: string;
@@ -31,6 +32,7 @@ export default function App({ name }: AppProps) {
   const [loading, isLoading] = useState<boolean>(true);
   const [data, setData] = useState<Country[]>([]);
   let [countries, setCountries] = useState<string[]>([]);
+
   useEffect(() => {
     const countriesGET = findGetParameter('countries');
     if (countriesGET) {
@@ -38,13 +40,8 @@ export default function App({ name }: AppProps) {
     } else {
       setCountries((countries = ['China', 'Italy', 'US']));
     }
-    Promise.all(countries.map(getData)).then(results => {
-      setData(
-        results.filter(r => {
-          console.error(r.error);
-          return !r.error;
-        }) as Country[]
-      );
+    getData(countries).then(results => {
+      setData(results);
       isLoading(false);
     });
   }, []);
@@ -52,32 +49,49 @@ export default function App({ name }: AppProps) {
   if (loading) {
     return (
       <Container padding="2em" margin="0 auto" width="900px">
-        <Heading>Covid-19 Stats / {formatCountries(countries)}</Heading>
-        <Text>Loading data ...</Text>
+        <Heading>
+          Covid-19 Statistics
+          <br />
+          {formatCountries(countries)}
+        </Heading>
+        <Info />
+        <Container padding="2em 0" margin="2em 0 0 0">
+          <Text>Loading data ...</Text>
+        </Container>
       </Container>
     );
   }
   return (
-    <Container padding="2em" margin="0 auto" width="900px">
-      <Heading>Covid-19 Stats / {formatCountries(countries)}</Heading>
-      <Text>
-        The data is coming from{' '}
-        <Link href="https://github.com/CSSEGISandData/COVID-19">
-          Johns Hopkins CSSE
-        </Link>
-        ,{' '}
-        <Link href="https://github.com/ExpDev07/coronavirus-tracker-api">
-          (api).
-        </Link>
-        .
-      </Text>
-      <Line />
-      <Title>Confirmed cases</Title>
-      <GraphSummary data={data} types={['confirmed']} />
-      <GraphPace data={data} types={['confirmed']} />
-      <Title>Death cases</Title>
-      <GraphSummary data={data} types={['deaths']} />
-      <GraphPace data={data} types={['deaths']} />
+    <Container padding="2em 0">
+      <Container margin="0 auto" width="900px">
+        <Heading>
+          Covid-19 Statistics
+          <br />
+          {formatCountries(countries)}
+        </Heading>
+        <Info />
+      </Container>
+      <Container padding="2em 0" margin="2em 0 0 0" bg="#f6f7e4">
+        <Container margin="0 auto" width="900px">
+          <Title>Confirmed cases</Title>
+          <GraphSummary data={data} types={['confirmed']} />
+          <GraphPace data={data} types={['confirmed']} />
+        </Container>
+      </Container>
+      <Container padding="2em 0" bg="#ffd8d1">
+        <Container margin="0 auto" width="900px">
+          <Title>Death cases</Title>
+          <GraphSummary data={data} types={['deaths']} />
+          <GraphPace data={data} types={['deaths']} />
+        </Container>
+      </Container>
+      <Container padding="2em 0" bg="#e6fcd4">
+        <Container margin="0 auto" width="900px">
+          <Title>Recovered cases</Title>
+          <GraphSummary data={data} types={['recovered']} />
+          <GraphPace data={data} types={['recovered']} />
+        </Container>
+      </Container>
     </Container>
   );
 }

@@ -2,14 +2,9 @@ const fs = require('fs');
 const { parse } = require('url');
 const superagent = require('superagent');
 const normalize = require('./normalizeData');
-const locationsData = require('./locations.json');
 
-const USE_MOCKS = false;
-const MOCKS = {
-  BG: JSON.parse(fs.readFileSync(`${__dirname}/mock/BG.json`).toString('utf8')),
-  CN: JSON.parse(fs.readFileSync(`${__dirname}/mock/CN.json`).toString('utf8')),
-  IT: JSON.parse(fs.readFileSync(`${__dirname}/mock/IT.json`).toString('utf8')),
-};
+const USE_MOCKS = true;
+const timeseries = require('./mock/timeseries.json');
 
 function JSONResponse(res, data, status = 200) {
   res.setHeader('Content-Type', 'application/json');
@@ -18,40 +13,44 @@ function JSONResponse(res, data, status = 200) {
   res.end(JSON.stringify(data));
 }
 
-function endpoint(countryCode) {
-  return `https://coronavirus-tracker-api.herokuapp.com/v2/locations?timelines=1&country_code=${countryCode}`;
+function generateData(countries, data) {
+  return countries.map(c => {
+    const foundEntry = Object.keys(data).reduce((r, country) => {
+      if (r) return r;
+      if (country.toLowerCase() === c.toLowerCase()) {
+        return { country, data: data[country] };
+      }
+      return false;
+    }, false);
+
+    if (foundEntry) {
+      return normalize(foundEntry.country, foundEntry.data);
+    }
+    return null;
+  });
 }
 
 module.exports = async function(req, res) {
   const { query } = parse(req.url, true);
 
-  if (!query.country) {
-    return JSONResponse(res, { error: 'Missing "country" parameter' });
-  }
-  const location = locationsData.locations.find(
-    loc =>
-      loc.country.toLowerCase() === query.country.toLowerCase() ||
-      loc.country_code.toLowerCase() === query.country.toLowerCase()
-  );
-
-  if (!location) {
-    return JSONResponse(res, {
-      error: `No location found "${query.country}"`,
-    });
+  if (!query.countries) {
+    return JSONResponse(res, { error: 'Missing "countries" parameter' });
   }
 
-  if (USE_MOCKS && MOCKS[location.country_code]) {
-    console.log(`Mocking: ${location.country}`);
-    JSONResponse(res, normalize(location, MOCKS[location.country_code]));
+  const countries = query.countries.split(',');
+
+  if (USE_MOCKS) {
+    console.log(`Mocking ...`);
+    JSONResponse(res, generateData(countries, timeseries));
   } else {
     try {
-      const e = endpoint(location.country_code);
+      const e = 'https://pomber.github.io/covid19/timeseries.json';
       console.log(`Requesting: ${e}`);
       superagent
         .get(e)
         .set('accept', 'json')
         .end((err, data) => {
-          JSONResponse(res, normalize(location, data.body));
+          JSONResponse(res, generateData(countries, data));
         });
     } catch (err) {
       JSONResponse(res, { error: err }, err.status || 404);

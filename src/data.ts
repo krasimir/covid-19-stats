@@ -1,20 +1,12 @@
 import { Country } from './types';
 
-export async function getData(country: string): Promise<Country> {
+export async function getData(countries: string[]): Promise<Country[]> {
   try {
-    const result = await fetch(`/api?country=${country}`);
-    return (await result.json()) as Country;
+    const result = await fetch(`/api?countries=${countries.join(',')}`);
+    return (await result.json()).filter(
+      (c: Country | null) => c !== null
+    ) as Country[];
   } catch (err) {
-    console.log(err);
-    return {
-      country,
-      latest: {
-        confirmed: 0,
-        deaths: 0,
-        recovered: 0,
-      },
-      pace: {},
-      dates: {},
-    };
+    return [];
   }
 }

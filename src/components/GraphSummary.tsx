@@ -31,31 +31,31 @@ export default function GraphSummary({ data, types }: GraphSummaryProps) {
     types.forEach(type => {
       keys.push(getGraphItemKey(c, type));
     });
-    Object.keys(c.dates).forEach(date => {
-      const foundDate = graphData.find(({ x }) => x === date);
+    c.dates.forEach(entry => {
+      const foundDate = graphData.find(({ date }) => date === entry.date);
       if (foundDate) {
         types.forEach(type => {
-          foundDate[getGraphItemKey(c, type)] = c.dates[date][type];
+          foundDate[getGraphItemKey(c, type)] = entry[type];
         });
       } else {
         const item: GraphItem = {};
-        item.x = date;
+        item.date = entry.date;
         types.forEach(type => {
-          item[getGraphItemKey(c, type)] = c.dates[date][type];
+          item[getGraphItemKey(c, type)] = entry[type];
         });
         graphData.push(item);
       }
     });
   });
   graphData = graphData.map(obj => {
-    obj.x = formatDateStr(obj.x as string);
+    obj.date = formatDateStr(obj.date as string);
     return obj;
   });
   return (
     <Container margin="1em 0">
       <Text ta="center">By date</Text>
       <LineChart width={900} height={400} data={graphData}>
-        <XAxis dataKey="x" interval="preserveStartEnd" />
+        <XAxis dataKey="date" interval="preserveStartEnd" />
         <YAxis />
         <CartesianGrid />
         <Tooltip />

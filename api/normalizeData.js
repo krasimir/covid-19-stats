@@ -1,16 +1,6 @@
 /* eslint-disable no-sequences, no-multi-assign */
 const types = ['confirmed', 'deaths', 'recovered'];
 
-function normalizeProvince(province, dates) {
-  types.forEach(type => {
-    Object.keys(province.timelines[type].timeline).forEach(date => {
-      if (!dates[date]) {
-        dates[date] = types.reduce((r, t) => ((r[t] = 0), r), {});
-      }
-      dates[date][type] += province.timelines[type].timeline[date];
-    });
-  });
-}
 function generatePace(dates) {
   const pace = {};
   const lastOne = {};
@@ -19,8 +9,8 @@ function generatePace(dates) {
   types.forEach(type => {
     lastOne[type] = 0;
   });
-  Object.keys(dates).forEach(date => {
-    if (types.some(type => dates[date][type] > 0)) {
+  dates.forEach((entry, i) => {
+    if (types.some(type => dates[i][type] > 0)) {
       isCounting = true;
     }
     if (isCounting) {
@@ -28,47 +18,35 @@ function generatePace(dates) {
       const key = `day${days}`;
       types.forEach(type => {
         if (!pace[key]) {
-          pace[key] = { date };
+          pace[key] = { date: entry.date };
           types.forEach(t => {
             pace[key][t] = 0;
           });
         }
-        pace[key][type] = dates[date][type] - lastOne[type];
-        lastOne[type] = dates[date][type];
+        pace[key][type] = dates[i][type] - lastOne[type];
+        lastOne[type] = dates[i][type];
       });
     }
   });
   return pace;
 }
-
-module.exports = function(location, data) {
-  const dates = {};
-  data.locations.forEach(province => {
-    normalizeProvince(province, dates);
-  });
+function generateTotal(dates) {
+  if (dates.length === 0) {
+    return { confirmed: 0, deaths: 0, recovered: 0 };
+  }
+  const last = dates[dates.length - 1];
   return {
-    country: location.country,
-    latest: data.latest,
-    pace: generatePace(dates),
-    dates,
+    confirmed: last.confirmed,
+    deaths: last.deaths,
+    recovered: last.recovered,
   };
-};
-
-/*
-
-Format:
-
-export interface Country {
-  country: string;
-  latest: Covid;
-  dates: Record<string, Covid>;
 }
 
-export type Covid = {
-  [key: string]: number;
-  confirmed: number;
-  deaths: number;
-  recovered: number;
+module.exports = function(country, data) {
+  return {
+    country,
+    total: generateTotal(data),
+    dates: data,
+    pace: generatePace(data),
+  };
 };
-
-*/
