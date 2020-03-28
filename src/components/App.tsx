@@ -73,9 +73,9 @@ export default function App({ name }: AppProps) {
       </Container>
       <Container padding="2em 0" bg="#fff">
         <Container margin="0 auto" width="900px">
-          <Title>Hospitalized cases in {formatCountries(countries)}</Title>
+          <Title>Active cases in {formatCountries(countries)}</Title>
           <Text ta="center">
-            <small>confirmed - recovered = hospitalized</small>
+            <small>confirmed - recovered = active</small>
           </Text>
           <GraphHospitalize data={data} />
         </Container>
