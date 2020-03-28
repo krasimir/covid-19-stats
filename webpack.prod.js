@@ -23,7 +23,7 @@ module.exports = {
   output: {
     path: `${__dirname}/public`,
     publicPath: '/',
-    filename: 'app.min.js',
+    filename: 'app.js',
   },
   optimization: {
     minimizer: [new TerserPlugin()],

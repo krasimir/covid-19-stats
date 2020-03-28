@@ -3,7 +3,7 @@ const { parse } = require('url');
 const superagent = require('superagent');
 const normalize = require('./normalizeData');
 
-const USE_MOCKS = true;
+const USE_MOCKS = false;
 const timeseries = require('./mock/timeseries.json');
 
 function JSONResponse(res, data, status = 200) {
@@ -65,8 +65,8 @@ module.exports = async function(req, res) {
         .set('accept', 'json')
         .end((err, data) => {
           JSONResponse(res, {
-            data: generateData(countries, data),
-            summary: getSummary(data),
+            data: generateData(countries, data.body),
+            summary: getSummary(data.body),
           });
         });
     } catch (err) {

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import ReactTags, { Tag } from 'react-tag-autocomplete';
 import { Country } from '../types';
 import { Link, Text, Container, Title } from './ui';
+import { formatCountries } from '../utils';
 
 const builder = {
   tags: [
@@ -56,12 +57,15 @@ export default function Builder({ countries, data }: BuilderProps) {
         suggestions={suggestions}
         handleDelete={handleDelete}
         handleAddition={handleAddition}
-        placeholder="Add new country"
+        placeholder="Add a country"
       />
       {tags.length > 0 ? (
         <Text ta="center" padding="1em 0 0 0">
-          📌{'  '}
-          <Link href={link}>{link}</Link>
+          📌{' '}
+          <Link href={link}>
+            Click here to see stats for {formatCountries(tags.map(t => t.name))}
+          </Link>{' '}
+          📌
         </Text>
       ) : (
         ''

@@ -50,6 +50,6 @@
     "build": "webpack --config ./webpack.prod.js --mode production",
     "dev": "concurrently \"now dev\" \"yarn watch\"",
     "watch": "webpack --config ./webpack.config.js --mode development",
-    "release": "now --prod"
+    "release": "yarn build && now --prod"
   }
 }

@@ -23,8 +23,10 @@ function generatePace(dates) {
             pace[key][t] = 0;
           });
         }
-        pace[key][type] = dates[i][type] - lastOne[type];
-        lastOne[type] = dates[i][type];
+        if (dates[i][type] - lastOne[type] > 0) {
+          pace[key][type] = dates[i][type] - lastOne[type];
+          lastOne[type] = dates[i][type];
+        }
       });
     }
   });

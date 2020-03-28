@@ -109,8 +109,17 @@ export default function App({ name }: AppProps) {
               Johns Hopkins University
             </Link>
             .<br />
-            Contributions are open{' '}
-            <Link href="https://github.com/krasimir/covid-19-stats">here</Link>
+            This project is living in GitHub at{' '}
+            <Link href="https://github.com/krasimir/covid-19-stats">
+              github.com/krasimir
+            </Link>
+            .
+            <br />
+            The data in JSON format{' '}
+            <Link href="https://pomber.github.io/covid19/timeseries.json">
+              here
+            </Link>
+            .
           </small>
         </Text>
       </Container>
