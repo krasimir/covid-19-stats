@@ -41,8 +41,13 @@ export const Text = styled.p<StylesProps>`
   font-size: 1em;
   line-height: 1.3em;
   margin: 0;
-  padding: 0 0 1em 0;
+  padding: ${props => ('padding' in props ? props.padding : '0 0 1em 0')};
   text-align: ${props => ('ta' in props ? props.ta : 'left')};
+`;
+
+export const TableCell = styled(Text)`
+  border-top: dotted 1px #cfcfcf;
+  padding: 1em;
 `;
 
 export const Link = styled.a`

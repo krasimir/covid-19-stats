@@ -1,7 +1,8 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 import { Text, Line, Link, Grid, Container, BigEmoji } from './ui';
-import { Summary } from '../types';
+import { Summary, Covid } from '../types';
+import { calculateMortalityRate } from '../utils';
 
 type InfoProps = {
   summary: Summary;
@@ -26,27 +27,42 @@ export default function Info({ summary }: InfoProps) {
         </small>
       </Text>
       <Line />
-      <Grid columns="1fr 1fr 1fr">
+      <Grid columns="1fr 1fr 1fr 1fr">
         <div>
           <BigEmoji ta="center">😷</BigEmoji>
-          <Text>
-            <small>confirmed cases</small>
+          <Text ta="center" padding="0">
+            {summary.confirmed}
           </Text>
-          <Text ta="center">{summary.confirmed}</Text>
+          <Text ta="center">
+            <small>confirmed</small>
+          </Text>
+        </div>
+        <div>
+          <BigEmoji ta="center">🙂</BigEmoji>
+          <Text ta="center" padding="0">
+            {summary.recovered}
+          </Text>
+          <Text ta="center">
+            <small>recovered</small>
+          </Text>
         </div>
         <div>
           <BigEmoji ta="center">💀</BigEmoji>
-          <Text>
-            <small>death cases</small>
+          <Text ta="center" padding="0">
+            {summary.deaths}
           </Text>
-          <Text ta="center">{summary.deaths}</Text>
+          <Text ta="center">
+            <small>deaths</small>
+          </Text>
         </div>
         <div>
-          <BigEmoji ta="center">😅</BigEmoji>
-          <Text>
-            <small>recovered cases</small>
+          <BigEmoji ta="center">📈</BigEmoji>
+          <Text ta="center" padding="0">
+            {calculateMortalityRate(summary as Covid)}
           </Text>
-          <Text ta="center">{summary.recovered}</Text>
+          <Text ta="center">
+            <small>mortality rate</small>
+          </Text>
         </div>
       </Grid>
     </Container>

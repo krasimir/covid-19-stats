@@ -7,26 +7,13 @@ import { Country, Summary } from '../types';
 import GraphSummary from './GraphSummary';
 import GraphPace from './GraphPace';
 import Info from './Info';
+import TableSummary from './TableSummary';
+
 import allCountries from '../countries.json';
+import { formatCountries, findGetParameter } from '../utils';
 
 interface AppProps {
   name: string;
-}
-
-function formatCountries(cs: string[]): string {
-  return cs.join(', ');
-}
-function findGetParameter(parameterName: string): null | string {
-  let result = null;
-  let tmp = [];
-  location.search
-    .substr(1)
-    .split('&')
-    .forEach(function(item) {
-      tmp = item.split('=');
-      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
-    });
-  return result;
 }
 
 export default function App({ name }: AppProps) {
@@ -53,7 +40,6 @@ export default function App({ name }: AppProps) {
       setCountries((countries = ['China', 'Italy', 'US']));
     }
     getData(countries).then(results => {
-      console.log(results);
       setData(results.data.filter(entry => entry));
       setSummary(results.summary);
       isLoading(false);
@@ -76,7 +62,13 @@ export default function App({ name }: AppProps) {
         <Heading>Covid-19 Statistics</Heading>
         <Info summary={summary} />
       </Container>
-      <Container padding="2em 0" margin="2em 0 0 0" bg="#f6f7e4">
+      <Container padding="2em 0" margin="2em 0 0 0" bg="#f2f2f2">
+        <Container margin="0 auto" width="900px">
+          <Title>{formatCountries(countries)}</Title>
+          <TableSummary data={data} />
+        </Container>
+      </Container>
+      <Container padding="2em 0" bg="#d5f4f7">
         <Container margin="0 auto" width="900px">
           <Title>Confirmed cases in {formatCountries(countries)}</Title>
           <GraphSummary data={data} types={['confirmed']} />
@@ -96,6 +88,19 @@ export default function App({ name }: AppProps) {
           <GraphSummary data={data} types={['recovered']} />
           <GraphPace data={data} types={['recovered']} />
         </Container>
+      </Container>
+      <Container margin="3em auto" width="550px">
+        <Text ta="center">
+          <small>
+            Data is fetched from{' '}
+            <Link href="https://github.com/CSSEGISandData/COVID-19">
+              Johns Hopkins University
+            </Link>
+            .<br />
+            Contributions are open{' '}
+            <Link href="https://github.com/krasimir/covid-19-stats">here</Link>
+          </small>
+        </Text>
       </Container>
     </Container>
   );
