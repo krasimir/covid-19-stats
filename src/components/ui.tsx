@@ -18,7 +18,7 @@ export const Container = styled.div<StylesProps>`
   background: ${props => ('bg' in props ? props.bg : '')};
 `;
 
-export const Heading = styled.h2`
+export const Heading = styled.h1`
   font-family: 'Fredoka One', cursive;
   font-size: 2em;
   line-height: 1.4em;

@@ -834,6 +834,13 @@
   dependencies:
     "@types/react" "*"
 
+"@types/react-tag-autocomplete@5.12.0":
+  version "5.12.0"
+  resolved "https://registry.yarnpkg.com/@types/react-tag-autocomplete/-/react-tag-autocomplete-5.12.0.tgz#bcebefd07abd20ee7a1d9594cf4f2f0297625868"
+  integrity sha512-QvPBUrXnkU5e3EaHiXQcI0oRsV1JwvL2vvgXtY5x7SkW19O3FRGFdcPg4+SA545+pcIsijf1O2wQ/sCCTeEe9w==
+  dependencies:
+    "@types/react" "*"
+
 "@types/react@*":
   version "16.9.25"
   resolved "https://registry.yarnpkg.com/@types/react/-/react-16.9.25.tgz#6ae2159b40138c792058a23c3c04fd3db49e929e"
@@ -4863,6 +4870,11 @@ react-smooth@^1.0.5:
     prop-types "^15.6.0"
     raf "^3.4.0"
     react-transition-group "^2.5.0"
+
+react-tag-autocomplete@5.12.1:
+  version "5.12.1"
+  resolved "https://registry.yarnpkg.com/react-tag-autocomplete/-/react-tag-autocomplete-5.12.1.tgz#f6a56aaa151771af3db99780b5f32150e827e835"
+  integrity sha512-tVY1U/QLfwtkkaPWVVE+MZl7w27Sbzms1atWT+x/PQdN46aPwrViMx02vUQ0TGD4IWPT5sFtdfv6/Pf0qcYhSw==
 
 react-transition-group@^2.5.0:
   version "2.9.0"
