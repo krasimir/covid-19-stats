@@ -48,7 +48,6 @@ export default function GraphHospitalized({ data }: GraphHospitalizedProps) {
   });
   return (
     <Container margin="1em 0">
-      <Text ta="center">By date</Text>
       <LineChart width={900} height={400} data={graphData}>
         <XAxis dataKey="date" interval="preserveStartEnd" />
         <YAxis />
