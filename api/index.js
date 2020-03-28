@@ -1,12 +1,16 @@
 const fs = require('fs');
 const { parse } = require('url');
 const superagent = require('superagent');
+const normalize = require('./normalizeData');
+const locationsData = require('./locations.json');
 
 const USE_MOCKS = true;
 const MOCKS = {
-  BG: JSON.parse(fs.readFileSync(`${__dirname}/mock/BG.json`).toString('utf8')),
-  CN: JSON.parse(fs.readFileSync(`${__dirname}/mock/CN.json`).toString('utf8')),
-  IT: JSON.parse(fs.readFileSync(`${__dirname}/mock/IT.json`).toString('utf8')),
+  30: JSON.parse(fs.readFileSync(`${__dirname}/mock/30.json`).toString('utf8')), // bg
+  49: JSON.parse(fs.readFileSync(`${__dirname}/mock/49.json`).toString('utf8')), // ch
+  137: JSON.parse(
+    fs.readFileSync(`${__dirname}/mock/137.json`).toString('utf8')
+  ), // it
 };
 
 function JSONResponse(res, data, status = 200) {
@@ -16,8 +20,8 @@ function JSONResponse(res, data, status = 200) {
   res.end(JSON.stringify(data));
 }
 
-function endpoint(countryCode) {
-  return `https://coronavirus-tracker-api.herokuapp.com/v2/locations?timelines=1&country_code=${countryCode}`;
+function endpoint(countryId) {
+  return `https://coronavirus-tracker-api.herokuapp.com/v2/locations/${countryId}?timelines=1`;
 }
 
 module.exports = async function(req, res) {
@@ -26,19 +30,32 @@ module.exports = async function(req, res) {
   if (!query.country) {
     return JSONResponse(res, { error: 'Missing "country" parameter' }, 400);
   }
+  const location = locationsData.locations.find(
+    loc =>
+      loc.country.toLowerCase() === query.country.toLowerCase() ||
+      loc.country_code.toLowerCase() === query.country.toLowerCase()
+  );
 
-  if (USE_MOCKS && MOCKS[query.country]) {
-    console.log(`Mocking: ${query.country}`);
-    JSONResponse(res, MOCKS[query.country]);
+  if (!location) {
+    return JSONResponse(
+      res,
+      { error: 'No location found behind the "country" parameter' },
+      400
+    );
+  }
+
+  if (USE_MOCKS && MOCKS[location.id]) {
+    console.log(`Mocking: ${location.country}`);
+    JSONResponse(res, normalize(location, MOCKS[location.id]));
   } else {
     try {
-      const e = endpoint(query.country);
+      const e = endpoint(location.id);
       console.log(`Requesting: ${e}`);
       superagent
         .get(e)
         .set('accept', 'json')
         .end((err, data) => {
-          JSONResponse(res, data.body);
+          JSONResponse(res, normalize(location, data.body));
         });
     } catch (err) {
       JSONResponse(res, { error: err }, err.status || 404);

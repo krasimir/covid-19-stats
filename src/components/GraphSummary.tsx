@@ -14,11 +14,12 @@ import { Container, Title } from './ui';
 
 interface GraphSummaryProps {
   data: Country[];
-  countries: string[];
   label: string;
+  types: string[];
 }
 
-const types = ['confirmed', 'deaths', 'recovered'];
+const getGraphItemKey = (country: Country, type: string) =>
+  `${country.country}(${type})`;
 
 type GraphItem = {
   [key: string]: number | string;
@@ -26,32 +27,32 @@ type GraphItem = {
 
 export default function GraphSummary({
   data,
-  countries,
   label,
+  types,
 }: GraphSummaryProps) {
-  let graphData: GraphItem[] = [];
+  const graphData: GraphItem[] = [];
+  const keys: string[] = [];
   data.forEach(c => {
+    types.forEach(type => {
+      keys.push(getGraphItemKey(c, type));
+    });
     Object.keys(c.dates).forEach(date => {
       const foundDate = graphData.find(({ x }) => x === date);
       if (foundDate) {
         types.forEach(type => {
-          foundDate[c.country + type] = c.dates[date][type];
+          foundDate[getGraphItemKey(c, type)] = c.dates[date][type];
         });
       } else {
+        const item: GraphItem = {};
+        item.x = date;
         types.forEach(type => {
-          graphData.push({
-            x: date,
-            [c.country + type]: c.dates[date][type],
-          });
+          item[getGraphItemKey(c, type)] = c.dates[date][type];
         });
+        graphData.push(item);
       }
     });
   });
-  graphData = graphData.map(obj => {
-    obj.x = formatDateStr(obj.x as string);
-    return obj;
-  });
-  console.log(graphData);
+  console.log(keys);
   return (
     <Container margin="1em 0">
       <Title>{label}</Title>
@@ -61,21 +62,19 @@ export default function GraphSummary({
         <CartesianGrid />
         <Tooltip />
         <Legend />
-        {...countries.reduce<JSX.Element[]>((lines, countryStr) => {
+        {...keys.reduce<JSX.Element[]>((lines, key) => {
           const color = getRandomColor();
-          types.forEach(type =>
-            lines.push(
-              <Line
-                key={countryStr + type}
-                dot={false}
-                type="monotone"
-                dataKey={countryStr + type}
-                strokeWidth={3}
-                stroke={color}
-                activeDot={{ r: 5 }}
-                legendType="circle"
-              />
-            )
+          lines.push(
+            <Line
+              key={key}
+              dot={false}
+              type="monotone"
+              dataKey={key}
+              strokeWidth={3}
+              stroke={color}
+              activeDot={{ r: 5 }}
+              legendType="circle"
+            />
           );
           return lines;
         }, [])}

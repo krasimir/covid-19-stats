@@ -9,7 +9,7 @@ interface AppProps {
   name: string;
 }
 
-const countries: string[] = ['CN', 'IT', 'BG'];
+const countries: string[] = ['China', 'Italy', 'Bulgaria'];
 
 function formatCountries(cs: string[]): string {
   return cs.join(', ');
@@ -28,17 +28,16 @@ export default function App({ name }: AppProps) {
   if (loading) {
     return (
       <Container padding="2em" margin="0 auto" width="900px">
-        <Heading>Covid-19 Stats</Heading>
-        <Text>Loading data for {formatCountries(countries)} ...</Text>
+        <Heading>Covid-19 Stats / {formatCountries(countries)}</Heading>
+        <Text>Loading data ...</Text>
       </Container>
     );
   }
   return (
     <Container padding="2em" margin="0 auto" width="900px">
-      <Heading>Covid-19 Stats</Heading>
+      <Heading>Covid-19 Stats / {formatCountries(countries)}</Heading>
       <Text>
-        The graphs below are for the following countries:{' '}
-        {formatCountries(countries)}. The data is coming from{' '}
+        The data is coming from{' '}
         <Link href="https://github.com/CSSEGISandData/COVID-19">
           Johns Hopkins CSSE
         </Link>
@@ -47,7 +46,7 @@ export default function App({ name }: AppProps) {
       <Line />
       <GraphSummary
         data={data}
-        countries={countries}
+        types={['confirmed']} // recovered removed because of https://github.com/ExpDev07/coronavirus-tracker-api/issues/200
         label="Summary / confirmed cases / all days"
       />
     </Container>
