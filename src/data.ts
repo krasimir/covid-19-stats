@@ -1,4 +1,4 @@
-import { Country, Covid } from './types';
+import { Country } from './types';
 
 export async function getData(country: string): Promise<Country> {
   try {

@@ -6,6 +6,7 @@ export type Covid = {
 };
 
 export interface Country {
+  error?: string;
   country: string;
   latest: Covid;
   dates: Record<string, Covid>;

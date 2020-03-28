@@ -4,7 +4,7 @@ const superagent = require('superagent');
 const normalize = require('./normalizeData');
 const locationsData = require('./locations.json');
 
-const USE_MOCKS = true;
+const USE_MOCKS = false;
 const MOCKS = {
   30: JSON.parse(fs.readFileSync(`${__dirname}/mock/30.json`).toString('utf8')), // bg
   49: JSON.parse(fs.readFileSync(`${__dirname}/mock/49.json`).toString('utf8')), // ch
@@ -20,15 +20,15 @@ function JSONResponse(res, data, status = 200) {
   res.end(JSON.stringify(data));
 }
 
-function endpoint(countryId) {
-  return `https://coronavirus-tracker-api.herokuapp.com/v2/locations/${countryId}?timelines=1`;
+function endpoint(countryCode) {
+  return `https://coronavirus-tracker-api.herokuapp.com/v2/locations?timelines=1&country_code=${countryCode}`;
 }
 
 module.exports = async function(req, res) {
   const { query } = parse(req.url, true);
 
   if (!query.country) {
-    return JSONResponse(res, { error: 'Missing "country" parameter' }, 400);
+    return JSONResponse(res, { error: 'Missing "country" parameter' });
   }
   const location = locationsData.locations.find(
     loc =>
@@ -37,11 +37,9 @@ module.exports = async function(req, res) {
   );
 
   if (!location) {
-    return JSONResponse(
-      res,
-      { error: 'No location found behind the "country" parameter' },
-      400
-    );
+    return JSONResponse(res, {
+      error: `No location found behind "${query.country}" value`,
+    });
   }
 
   if (USE_MOCKS && MOCKS[location.id]) {
@@ -49,7 +47,7 @@ module.exports = async function(req, res) {
     JSONResponse(res, normalize(location, MOCKS[location.id]));
   } else {
     try {
-      const e = endpoint(location.id);
+      const e = endpoint(location.country_code);
       console.log(`Requesting: ${e}`);
       superagent
         .get(e)

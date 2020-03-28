@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 
 import { Container, Heading, Text, Link, Line } from './ui';
@@ -9,21 +10,45 @@ interface AppProps {
   name: string;
 }
 
-const countries: string[] = ['China', 'Italy', 'Bulgaria'];
-
 function formatCountries(cs: string[]): string {
   return cs.join(', ');
+}
+function findGetParameter(parameterName: string): null | string {
+  let result = null;
+  let tmp = [];
+  location.search
+    .substr(1)
+    .split('&')
+    .forEach(function(item) {
+      tmp = item.split('=');
+      if (tmp[0] === parameterName) result = decodeURIComponent(tmp[1]);
+    });
+  return result;
 }
 
 export default function App({ name }: AppProps) {
   const [loading, isLoading] = useState<boolean>(true);
   const [data, setData] = useState<Country[]>([]);
+  let [countries, setCountries] = useState<string[]>([
+    'China',
+    'Italy',
+    'United Kingdom',
+  ]);
   useEffect(() => {
+    const countriesGET = findGetParameter('countries');
+    if (countriesGET) {
+      setCountries((countries = countriesGET.split(',')));
+    }
     Promise.all(countries.map(getData)).then(results => {
-      setData(results);
+      setData(
+        results.filter(r => {
+          console.error(r.error);
+          return !r.error;
+        }) as Country[]
+      );
       isLoading(false);
     });
-  }, [setData]);
+  }, []);
 
   if (loading) {
     return (
@@ -46,9 +71,20 @@ export default function App({ name }: AppProps) {
       <Line />
       <GraphSummary
         data={data}
-        types={['confirmed']} // recovered removed because of https://github.com/ExpDev07/coronavirus-tracker-api/issues/200
-        label="Summary / confirmed cases / all days"
+        types={['confirmed']}
+        label="Summary / confirmed cases"
       />
+      <GraphSummary
+        data={data}
+        types={['deaths']}
+        label="Summary / death cases"
+      />
+      {/* removed because of https://github.com/ExpDev07/coronavirus-tracker-api/issues/200
+        <GraphSummary
+        data={data}
+        types={['recovered']}
+        label="Summary / death cases"
+      /> */}
     </Container>
   );
 }

@@ -30,7 +30,7 @@ export default function GraphSummary({
   label,
   types,
 }: GraphSummaryProps) {
-  const graphData: GraphItem[] = [];
+  let graphData: GraphItem[] = [];
   const keys: string[] = [];
   data.forEach(c => {
     types.forEach(type => {
@@ -52,7 +52,10 @@ export default function GraphSummary({
       }
     });
   });
-  console.log(keys);
+  graphData = graphData.map(obj => {
+    obj.x = formatDateStr(obj.x as string);
+    return obj;
+  });
   return (
     <Container margin="1em 0">
       <Title>{label}</Title>
@@ -61,7 +64,7 @@ export default function GraphSummary({
         <YAxis />
         <CartesianGrid />
         <Tooltip />
-        <Legend />
+        <Legend formatter={(item, entry, idx) => data[idx as number].country} />
         {...keys.reduce<JSX.Element[]>((lines, key) => {
           const color = getRandomColor();
           lines.push(
