@@ -27,17 +27,16 @@ export default function GraphHospitalized({ data }: GraphHospitalizedProps) {
   let graphData: GraphItem[] = [];
   const keys: string[] = [];
   data.forEach(c => {
-    keys.push(getGraphItemKey(c, 'hospitalized'));
+    keys.push(getGraphItemKey(c, 'active'));
     c.dates.forEach(entry => {
       const foundDate = graphData.find(({ date }) => date === entry.date);
       if (foundDate) {
-        foundDate[getGraphItemKey(c, 'hospitalized')] =
+        foundDate[getGraphItemKey(c, 'active')] =
           entry.confirmed - entry.recovered;
       } else {
         const item: GraphItem = {};
         item.date = entry.date;
-        item[getGraphItemKey(c, 'hospitalized')] =
-          entry.confirmed - entry.recovered;
+        item[getGraphItemKey(c, 'active')] = entry.confirmed - entry.recovered;
         graphData.push(item);
       }
     });
