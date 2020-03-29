@@ -58,7 +58,7 @@ module.exports = async function(req, res) {
     });
   } else {
     try {
-      getData().then(data => {
+      getData(query.noCache).then(data => {
         if (data === null) {
           JSONResponse(
             res,

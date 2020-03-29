@@ -13,11 +13,14 @@ const memCache = {
   data: null,
 };
 
-module.exports = function getData() {
-  if (memCache.data) {
+module.exports = function getData(noCache) {
+  if (memCache.data && memCache.lastUpdate && typeof noCache === 'undefined') {
     const now = new Date();
-    console.log(now, memCache.lastUpdate);
-    console.log(`diff=${(now.getTime() - memCache.lastUpdate) / 1000 / 60}`);
+    const diff = (now.getTime() - memCache.lastUpdate) / 1000 / 60;
+    if (diff < 10) {
+      console.log(`Returning a cached data diff=${diff}`);
+      return Promise.resolve(memCache.data);
+    }
   }
   return new Promise(done => {
     Promise.all(
