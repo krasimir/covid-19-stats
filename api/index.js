@@ -1,10 +1,10 @@
 const fs = require('fs');
 const { parse } = require('url');
-const superagent = require('superagent');
 const normalize = require('./normalizeData');
 
 const USE_MOCKS = false;
 const timeseries = require('./mock/timeseries.json');
+const getData = require('./getData');
 
 function JSONResponse(res, data, status = 200) {
   res.setHeader('Content-Type', 'application/json');
@@ -58,17 +58,20 @@ module.exports = async function(req, res) {
     });
   } else {
     try {
-      const e = 'https://pomber.github.io/covid19/timeseries.json';
-      console.log(`Requesting: ${e}`);
-      superagent
-        .get(e)
-        .set('accept', 'json')
-        .end((err, data) => {
+      getData().then(data => {
+        if (data === null) {
+          JSONResponse(
+            res,
+            { error: 'Something went wrong while fetching data from JHU' },
+            500
+          );
+        } else {
           JSONResponse(res, {
-            data: generateData(countries, data.body),
-            summary: getSummary(data.body),
+            data: generateData(countries, data),
+            summary: getSummary(data),
           });
-        });
+        }
+      });
     } catch (err) {
       JSONResponse(res, { error: err }, err.status || 404);
     }

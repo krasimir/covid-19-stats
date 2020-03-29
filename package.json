@@ -38,6 +38,7 @@
     "@typescript-eslint/eslint-plugin": "2.19.2",
     "@typescript-eslint/parser": "2.19.2",
     "concurrently": "5.1.0",
+    "csv-parse": "4.8.8",
     "prop-types": "15.7.2",
     "react": "16.8.6",
     "react-dom": "16.8.6",
