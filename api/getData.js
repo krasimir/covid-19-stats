@@ -1,88 +1,27 @@
-const superagent = require('superagent');
-const parse = require('csv-parse');
-const credentials = require('./credentials.json');
-
-const URLs = [
-  'https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_confirmed_global.csv',
-  'https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_deaths_global.csv',
-  'https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
-];
+const csvToJSON = require('./csvToJSON');
+const getCSV = require('./getCSV');
 
 const memCache = {
   lastUpdate: null,
   data: null,
 };
 
+const CACHE_TTL = 20;
+
 module.exports = function getData(noCache) {
   if (memCache.data && memCache.lastUpdate && typeof noCache === 'undefined') {
     const now = new Date();
     const diff = (now.getTime() - memCache.lastUpdate) / 1000 / 60;
-    if (diff < 10) {
-      console.log(`Returning a cached data diff=${diff}`);
+    if (diff < CACHE_TTL) {
+      console.log(`Returning a cached data. Left=${CACHE_TTL - diff}`);
       return Promise.resolve(memCache.data);
     }
   }
   return new Promise(done => {
-    Promise.all(
-      URLs.map(
-        url =>
-          new Promise(requestDone => {
-            console.log(`requesting ${url}`);
-            superagent
-              .get(url)
-              .set(
-                'User-Agent',
-                'Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_5) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.75 Safari/537.36'
-              )
-              .set('Accept', 'application/vnd.github.VERSION.raw')
-              .set('Authorization', `token ${credentials.token}`)
-              .set('Content-type', `application/json`)
-              .end((err, data) => {
-                if (err) {
-                  console.log(err);
-                  return done(null);
-                }
-                requestDone(data.body.toString('utf8'));
-              });
-          })
-      )
-    ).then(data => {
-      // converting CSV to JSON data
+    getCSV(done).then(data => {
       Promise.all(
         data.map(
-          csv =>
-            new Promise(toJSONDone => {
-              parse(csv, { comment: '#' }, function(err, output) {
-                if (err) {
-                  console.log(err);
-                  return done(null);
-                }
-                const columns = output.shift();
-                const [
-                  headerProvince,
-                  headerCountry,
-                  headerLat,
-                  headerLon,
-                  ...dates
-                ] = columns;
-                const result = {};
-                output.forEach(row => {
-                  const [province, country, lat, lon, ...values] = row;
-                  if (!result[country]) {
-                    result[country] = dates.map((date, i) => ({
-                      date,
-                      value: Number(values[i]),
-                    }));
-                  } else {
-                    result[country] = result[country].map((d, i) => ({
-                      date: d.date,
-                      value: d.value + Number(values[i]),
-                    }));
-                  }
-                });
-                toJSONDone(result);
-              });
-            })
+          csv => new Promise(toJSONDone => csvToJSON(csv, toJSONDone, done))
         )
       ).then(normalizedCSVData => {
         memCache.lastUpdate = new Date().getTime();

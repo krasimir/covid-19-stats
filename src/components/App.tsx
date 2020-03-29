@@ -1,7 +1,7 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
 
-import { Container, Heading, Text, Link, Line, Title } from './ui';
+import { Container, Heading, Text, Link, Line, Title, Code } from './ui';
 import { getData, getCountries } from '../data';
 import { Country, Summary } from '../types';
 import GraphSummary from './GraphSummary';
@@ -11,12 +11,14 @@ import Info from './Info';
 import TableSummary from './TableSummary';
 import Builder from './Builder';
 
-import allCountries from '../countries.json';
-import { formatCountries, findGetParameter } from '../utils';
+import staticCountriesData from '../countries.json';
+import { formatCountries, findGetParameter, formatDateStr } from '../utils';
 
 interface AppProps {
   name: string;
 }
+
+const allCountries = Object.keys(staticCountriesData);
 
 export default function App({ name }: AppProps) {
   const [loading, isLoading] = useState<boolean>(true);
@@ -51,22 +53,34 @@ export default function App({ name }: AppProps) {
   if (loading) {
     return (
       <Container padding="2em" margin="0 auto" width="900px">
-        <Heading>Covid-19 Statistics</Heading>
+        <Heading>Covid-19 Statistics & API</Heading>
         <Container padding="2em 0">
           <Text ta="center">Loading data ...</Text>
         </Container>
       </Container>
     );
   }
+
+  const lastUpdate = formatDateStr(
+    data[0].dates[data[0].dates.length - 1].date,
+    true
+  );
+
   return (
     <Container padding="2em 0 0 0">
       <Container margin="0 auto" width="900px">
-        <Heading>Covid-19 Statistics</Heading>
+        <Heading>
+          Covid-19 Statistics & API
+          <br />
+          <small>{lastUpdate}</small>
+        </Heading>
         <Info summary={summary} />
       </Container>
       <Container padding="2em 0" margin="2em 0 0 0" bg="#f2f2f2">
         <Container margin="0 auto" width="900px">
-          <Title>{formatCountries(countries)}</Title>
+          <Title>
+            <a id="summary">{formatCountries(countries)}</a>
+          </Title>
           <TableSummary data={data} />
           <Builder countries={allCountries} data={data} />
         </Container>
@@ -82,44 +96,88 @@ export default function App({ name }: AppProps) {
       </Container>
       <Container padding="2em 0" bg="#d5f4f7">
         <Container margin="0 auto" width="900px">
-          <Title>Confirmed cases in {formatCountries(countries)}</Title>
+          <Title>
+            <a id="confirmed">
+              Confirmed cases in {formatCountries(countries)}
+            </a>
+          </Title>
           <GraphSummary data={data} types={['confirmed']} />
           <GraphPace data={data} types={['confirmed']} />
         </Container>
       </Container>
       <Container padding="2em 0" bg="#ffd8d1">
         <Container margin="0 auto" width="900px">
-          <Title>Death cases in {formatCountries(countries)}</Title>
+          <Title>
+            <a id="deaths">Death cases in {formatCountries(countries)}</a>
+          </Title>
           <GraphSummary data={data} types={['deaths']} />
           <GraphPace data={data} types={['deaths']} />
         </Container>
       </Container>
       <Container padding="2em 0" bg="#e6fcd4">
         <Container margin="0 auto" width="900px">
-          <Title>Recovered cases in {formatCountries(countries)}</Title>
+          <Title>
+            <a id="recovered">
+              Recovered cases in {formatCountries(countries)}
+            </a>
+          </Title>
           <GraphSummary data={data} types={['recovered']} />
           <GraphPace data={data} types={['recovered']} />
         </Container>
       </Container>
-      <Container margin="3em auto" width="550px">
-        <Text ta="center">
-          <small>
+      <Container padding="2em 0" bg="#00GG00">
+        <Container margin="0 auto" width="550px">
+          <Title>
+            <a id="api">API</a>
+          </Title>
+          <Text>
             Data is fetched from{' '}
             <Link href="https://github.com/CSSEGISandData/COVID-19">
               Johns Hopkins University
             </Link>
-            .<br />
-            This project is living in GitHub at{' '}
+            . A new request to their repository is made every 20 minutes.
+          </Text>
+          <Line />
+          <Text padding="0">➡️ Get data for specific countries</Text>
+          <Code>/api?countries=&lt;countries></Code>
+          <Text>
+            <small>
+              Example:{' '}
+              <Link href="/api?countries=US,Italy,Norway" target="_blank">
+                /api?countries=US,Italy,Norway
+              </Link>
+            </small>
+          </Text>
+          <Text padding="1em 0 0 0">➡️ Get data for all countries</Text>
+          <Code>/api?countries=all</Code>
+          <Text>
+            <small>
+              Example:{' '}
+              <Link href="/api?countries=all" target="_blank">
+                /api?countries=all
+              </Link>
+            </small>
+          </Text>
+          <Text padding="1em 0 0 0">➡️ Get list of all countries</Text>
+          <Code>/api/countries</Code>
+          <Text>
+            <small>
+              Example:{' '}
+              <Link href="/api/countries" target="_blank">
+                /api/countries
+              </Link>
+            </small>
+          </Text>
+        </Container>
+      </Container>
+      <Container margin="3em auto" width="550px">
+        <Line />
+        <Text ta="center">
+          <small>
+            This project is open source. For contribution go here{' '}
             <Link href="https://github.com/krasimir/covid-19-stats">
-              github.com/krasimir
+              github.com/krasimir/covid-19-stats
             </Link>
-            .
-            <br />
-            The data in JSON format{' '}
-            <Link href="https://pomber.github.io/covid19/timeseries.json">
-              here
-            </Link>
-            .
           </small>
         </Text>
       </Container>

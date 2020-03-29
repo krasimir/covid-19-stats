@@ -1,5 +1,6 @@
 /* eslint-disable no-sequences, no-multi-assign */
 const types = ['confirmed', 'deaths', 'recovered'];
+const countriesStaticData = require('./countries.json');
 
 function generatePace(dates) {
   const pace = {};
@@ -45,8 +46,10 @@ function generateTotal(dates) {
 }
 
 module.exports = function(country, data) {
+  const geo = countriesStaticData[country];
   return {
     country,
+    geo: geo || {},
     total: generateTotal(data),
     dates: data,
     pace: generatePace(data),

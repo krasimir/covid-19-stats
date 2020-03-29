@@ -19,7 +19,7 @@ export function getColor(idx: number): string {
   return colors[0];
 }
 
-export function formatDateStr(str: string): string {
+export function formatDateStr(str: string, includeYear = false): string {
   const monthNames = [
     'Jan',
     'Feb',
@@ -35,7 +35,9 @@ export function formatDateStr(str: string): string {
     'Dec',
   ];
   const d = new Date(str);
-  return `${d.getDate()} ${monthNames[d.getMonth()]}`;
+  return `${d.getDate()} ${monthNames[d.getMonth()]}${
+    includeYear ? ` ${d.getFullYear()}` : ''
+  }`;
 }
 
 export function calculateMortalityRate(c: Covid): string {

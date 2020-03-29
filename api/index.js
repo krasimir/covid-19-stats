@@ -2,8 +2,6 @@ const fs = require('fs');
 const { parse } = require('url');
 const normalize = require('./normalizeData');
 
-const USE_MOCKS = false;
-const timeseries = require('./mock/timeseries.json');
 const getData = require('./getData');
 
 function JSONResponse(res, data, status = 200) {
@@ -14,6 +12,10 @@ function JSONResponse(res, data, status = 200) {
 }
 
 function generateData(countries, data) {
+  const getAll = countries.length === 1 && countries[0] === 'all';
+  if (getAll) {
+    return Object.keys(data).map(country => normalize(country, data[country]));
+  }
   return countries.map(c => {
     const foundEntry = Object.keys(data).reduce((r, country) => {
       if (r) return r;
@@ -50,30 +52,22 @@ module.exports = async function(req, res) {
 
   const countries = query.countries.split(',');
 
-  if (USE_MOCKS) {
-    console.log(`Mocking ...`);
-    JSONResponse(res, {
-      data: generateData(countries, timeseries),
-      summary: getSummary(timeseries),
+  try {
+    getData(query.noCache).then(data => {
+      if (data === null) {
+        JSONResponse(
+          res,
+          { error: 'Something went wrong while fetching data from JHU' },
+          500
+        );
+      } else {
+        JSONResponse(res, {
+          data: generateData(countries, data),
+          summary: getSummary(data),
+        });
+      }
     });
-  } else {
-    try {
-      getData(query.noCache).then(data => {
-        if (data === null) {
-          JSONResponse(
-            res,
-            { error: 'Something went wrong while fetching data from JHU' },
-            500
-          );
-        } else {
-          JSONResponse(res, {
-            data: generateData(countries, data),
-            summary: getSummary(data),
-          });
-        }
-      });
-    } catch (err) {
-      JSONResponse(res, { error: err }, err.status || 404);
-    }
+  } catch (err) {
+    JSONResponse(res, { error: err }, err.status || 404);
   }
 };

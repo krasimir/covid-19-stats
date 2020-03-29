@@ -1,6 +1,6 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useState, useEffect } from 'react';
-import { Text, Line, Link, Grid, Container, BigEmoji } from './ui';
+import { Text, Line, Link, Grid, Container, BigEmoji, NavLink } from './ui';
 import { Summary, Covid } from '../types';
 import { calculateMortalityRate } from '../utils';
 
@@ -26,6 +26,16 @@ export default function Info({ summary }: InfoProps) {
           and cancer are more likely to develop serious illness.
         </small>
       </Text>
+      <Line />
+      <Container padding="2em 0">
+        <Text ta="center" padding="0">
+          <NavLink href="#summary">Summary</NavLink>
+          <NavLink href="#confirmed">Confirmed</NavLink>
+          <NavLink href="#deaths">Deaths</NavLink>
+          <NavLink href="#recovered">Recovered</NavLink>
+          <NavLink href="#api">API</NavLink>
+        </Text>
+      </Container>
       <Line />
       <Text ta="center">
         <small style={{ opacity: 0.3 }}>Data across the globe:</small>
