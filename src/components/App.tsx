@@ -47,16 +47,19 @@ export default function App({ name }: AppProps) {
       setData(results.data.filter(entry => entry));
       setSummary(results.summary);
       isLoading(false);
+      window.scrollTo(0, 0);
     });
   }, []);
 
   if (loading) {
     return (
       <Container padding="2em" margin="0 auto" width="900px">
-        <Heading>Covid-19 Statistics & API</Heading>
-        <Container padding="2em 0">
-          <Text ta="center">Loading data ...</Text>
-        </Container>
+        <Heading>
+          Covid-19 Statistics & API
+          <br />
+          <small>⌛ Loading data ...</small>
+        </Heading>
+        <Info summary={null} />
       </Container>
     );
   }
