@@ -27,6 +27,9 @@ export default function Info({ summary }: InfoProps) {
         </small>
       </Text>
       <Line />
+      <Text ta="center">
+        <small style={{ opacity: 0.3 }}>Data across the globe:</small>
+      </Text>
       <Grid columns="1fr 1fr 1fr 1fr">
         <div>
           <BigEmoji ta="center">😷</BigEmoji>

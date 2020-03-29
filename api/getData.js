@@ -8,7 +8,17 @@ const URLs = [
   'https://api.github.com/repos/CSSEGISandData/COVID-19/contents/csse_covid_19_data/csse_covid_19_time_series/time_series_covid19_recovered_global.csv',
 ];
 
+const memCache = {
+  lastUpdate: null,
+  data: null,
+};
+
 module.exports = function getData() {
+  if (memCache.data) {
+    const now = new Date();
+    console.log(now, memCache.lastUpdate);
+    console.log(`diff=${(now.getTime() - memCache.lastUpdate) / 1000 / 60}`);
+  }
   return new Promise(done => {
     Promise.all(
       URLs.map(
@@ -72,28 +82,32 @@ module.exports = function getData() {
             })
         )
       ).then(normalizedCSVData => {
+        memCache.lastUpdate = new Date().getTime();
         done(
-          normalizedCSVData.reduce((res, normalizedData, i) => {
-            let type;
-            if (i === 0) type = 'confirmed';
-            if (i === 1) type = 'deaths';
-            if (i === 2) type = 'recovered';
-            Object.keys(normalizedData).forEach(country => {
-              const countryData = normalizedData[country];
-              if (!res[country]) {
-                res[country] = countryData.map(d => ({
-                  date: d.date,
-                  [type]: d.value,
-                }));
-              } else {
-                res[country] = res[country].map((d, idx) => ({
-                  ...d,
-                  [type]: countryData[idx].value,
-                }));
-              }
-            });
-            return res;
-          }, {})
+          (memCache.data = normalizedCSVData.reduce(
+            (res, normalizedData, i) => {
+              let type;
+              if (i === 0) type = 'confirmed';
+              if (i === 1) type = 'deaths';
+              if (i === 2) type = 'recovered';
+              Object.keys(normalizedData).forEach(country => {
+                const countryData = normalizedData[country];
+                if (!res[country]) {
+                  res[country] = countryData.map(d => ({
+                    date: d.date,
+                    [type]: d.value,
+                  }));
+                } else {
+                  res[country] = res[country].map((d, idx) => ({
+                    ...d,
+                    [type]: countryData[idx].value,
+                  }));
+                }
+              });
+              return res;
+            },
+            {}
+          ))
         );
       });
     });

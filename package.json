@@ -50,6 +50,7 @@
   "scripts": {
     "build": "webpack --config ./webpack.prod.js --mode production",
     "dev": "concurrently \"now dev\" \"yarn watch\"",
+    "dev-server": "now dev",
     "watch": "webpack --config ./webpack.config.js --mode development",
     "release": "yarn build && now --prod"
   }
