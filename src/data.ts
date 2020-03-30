@@ -1,5 +1,9 @@
 import { Country, Summary, Covid } from './types';
 
+function sortByDate(a: Covid, b: Covid) {
+  return new Date(a.date).getTime() - new Date(b.date).getTime();
+}
+
 export async function getData(
   countries: string[],
   allCountries: boolean
@@ -47,10 +51,7 @@ export async function getData(
           pace: {},
         }
       );
-      merged.dates = merged.dates.sort(
-        (a: Covid, b: Covid) =>
-          new Date(a.date).getTime() - new Date(b.date).getTime()
-      );
+      merged.dates = merged.dates.sort(sortByDate);
       return { data: [merged], summary: allCountriesData.summary };
     }
     const result = await fetch(`/api?countries=${countries.join(',')}`);

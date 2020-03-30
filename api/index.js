@@ -1,3 +1,4 @@
+/* eslint-disable no-shadow */
 const fs = require('fs');
 const { parse } = require('url');
 const normalize = require('./normalizeData');
@@ -55,24 +56,52 @@ module.exports = async function(req, res) {
 
   try {
     getData(query.noCache)
-      .then(data => {
-        if (data === null) {
+      .then(rawData => {
+        if (rawData === null) {
           JSONResponse(
             res,
             { error: 'Something went wrong while fetching data.' },
             500
           );
         } else {
+          const data = generateData(countries, rawData);
+
+          // normalizing the missing dates
+          const allDates = data
+            .reduce((res, c) => {
+              c.dates.forEach(d => {
+                if (!res.find(i => i === d.date)) {
+                  res.push(d.date);
+                }
+              });
+              return res;
+            }, [])
+            .sort((a, b) => new Date(a).getTime() - new Date(b).getTime());
+          data.forEach(c => {
+            c.dates = allDates.map(date => {
+              const found = c.dates.find(entry => entry.date === date);
+              if (found) return found;
+              return {
+                date,
+                confirmed: 0,
+                deaths: 0,
+                recovered: 0,
+              };
+            });
+          });
+
           JSONResponse(res, {
-            data: generateData(countries, data),
-            summary: getSummary(data),
+            data,
+            summary: getSummary(rawData),
           });
         }
       })
       .catch(err => {
+        console.log(err);
         JSONResponse(res, { error: err }, 500);
       });
   } catch (err) {
+    console.log(err);
     JSONResponse(res, { error: err }, err.status || 404);
   }
 };

@@ -87,7 +87,7 @@ export default function App({ name }: AppProps) {
             <a id="summary">{formatCountries(countryNames)}</a>
           </Title>
           <TableSummary data={data} />
-          {!allCountries && <Builder countries={allCountries} data={data} />}
+          {!areAllCountries && <Builder countries={allCountries} data={data} />}
         </Container>
       </Container>
       <Container padding="2em 0" bg="#fff">
