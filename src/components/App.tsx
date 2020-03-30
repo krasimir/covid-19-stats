@@ -29,10 +29,12 @@ export default function App({ name }: AppProps) {
     recovered: 0,
   });
   let [countries, setCountries] = useState<string[]>([]);
+  let [areAllCountries, setAllCountries] = useState<boolean>(false);
 
   useEffect(() => {
     const countriesGET = findGetParameter('countries');
     if (countriesGET) {
+      setAllCountries((areAllCountries = countriesGET === 'all'));
       const recognized = countriesGET
         .split(',')
         .map(country =>
@@ -43,7 +45,7 @@ export default function App({ name }: AppProps) {
     } else {
       setCountries((countries = ['China', 'Italy', 'US']));
     }
-    getData(countries).then(results => {
+    getData(countries, areAllCountries).then(results => {
       setData(results.data.filter(entry => entry));
       setSummary(results.summary);
       isLoading(false);
@@ -64,10 +66,9 @@ export default function App({ name }: AppProps) {
     );
   }
 
-  const lastUpdate = formatDateStr(
-    data[0].dates[data[0].dates.length - 1].date,
-    true
-  );
+  const lastUpdate = data[0]
+    ? formatDateStr(data[0].dates[data[0].dates.length - 1].date, true)
+    : '';
 
   return (
     <Container padding="2em 0 0 0">
@@ -138,7 +139,19 @@ export default function App({ name }: AppProps) {
             <Link href="https://github.com/CSSEGISandData/COVID-19">
               Johns Hopkins University
             </Link>
-            . A new request to their repository is made every 20 minutes.
+            . A new request to their repository is made every 20 minutes. On the
+            question how often they update the repo they{' '}
+            <Link href="https://coronavirus.jhu.edu/map-faq.html">
+              answered
+            </Link>{' '}
+            -{' '}
+            <i>
+              <small>
+                "The GitHub database updates daily at around 11:59 p.m. UTC.
+                Occasional maintenance can result in slower updates"
+              </small>
+            </i>
+            .
           </Text>
           <Line />
           <Text padding="0">➡️ Get data for specific countries</Text>

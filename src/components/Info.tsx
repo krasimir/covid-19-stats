@@ -35,6 +35,7 @@ export default function Info({ summary }: InfoProps) {
               <NavLink href="#confirmed">Confirmed</NavLink>
               <NavLink href="#deaths">Deaths</NavLink>
               <NavLink href="#recovered">Recovered</NavLink>
+              <NavLink href="?countries=all">All countries</NavLink>
               <NavLink href="#api">API</NavLink>
             </Text>
           </Container>

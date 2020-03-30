@@ -8,6 +8,7 @@ export type Covid = {
 
 export interface Country {
   country: string;
+  geo: Record<string, number>;
   total: Covid;
   dates: Covid[];
   pace: Record<string, Covid>;
