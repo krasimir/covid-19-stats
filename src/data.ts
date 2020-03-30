@@ -1,4 +1,4 @@
-import { Country, Summary } from './types';
+import { Country, Summary, Covid } from './types';
 
 export async function getData(
   countries: string[],
@@ -40,14 +40,17 @@ export async function getData(
           return res;
         },
         {
-          country: 'World',
+          country: 'The World',
           geo: {},
           total: { confirmed: 0, deaths: 0, recovered: 0 },
           dates: [],
           pace: {},
         }
       );
-      console.log(merged);
+      merged.dates = merged.dates.sort(
+        (a: Covid, b: Covid) =>
+          new Date(a.date).getTime() - new Date(b.date).getTime()
+      );
       return { data: [merged], summary: allCountriesData.summary };
     }
     const result = await fetch(`/api?countries=${countries.join(',')}`);

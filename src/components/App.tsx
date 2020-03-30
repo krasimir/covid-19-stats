@@ -69,6 +69,7 @@ export default function App({ name }: AppProps) {
   const lastUpdate = data[0]
     ? formatDateStr(data[0].dates[data[0].dates.length - 1].date, true)
     : '';
+  const countryNames = data.map(({ country }) => country);
 
   return (
     <Container padding="2em 0 0 0">
@@ -83,15 +84,15 @@ export default function App({ name }: AppProps) {
       <Container padding="2em 0" margin="2em 0 0 0" bg="#f2f2f2">
         <Container margin="0 auto" width="900px">
           <Title>
-            <a id="summary">{formatCountries(countries)}</a>
+            <a id="summary">{formatCountries(countryNames)}</a>
           </Title>
           <TableSummary data={data} />
-          <Builder countries={allCountries} data={data} />
+          {!allCountries && <Builder countries={allCountries} data={data} />}
         </Container>
       </Container>
       <Container padding="2em 0" bg="#fff">
         <Container margin="0 auto" width="900px">
-          <Title>Active cases in {formatCountries(countries)}</Title>
+          <Title>Active cases in {formatCountries(countryNames)}</Title>
           <Text ta="center">
             <small>confirmed - recovered = active</small>
           </Text>
@@ -102,7 +103,7 @@ export default function App({ name }: AppProps) {
         <Container margin="0 auto" width="900px">
           <Title>
             <a id="confirmed">
-              Confirmed cases in {formatCountries(countries)}
+              Confirmed cases in {formatCountries(countryNames)}
             </a>
           </Title>
           <GraphSummary data={data} types={['confirmed']} />
@@ -112,7 +113,7 @@ export default function App({ name }: AppProps) {
       <Container padding="2em 0" bg="#ffd8d1">
         <Container margin="0 auto" width="900px">
           <Title>
-            <a id="deaths">Death cases in {formatCountries(countries)}</a>
+            <a id="deaths">Death cases in {formatCountries(countryNames)}</a>
           </Title>
           <GraphSummary data={data} types={['deaths']} />
           <GraphPace data={data} types={['deaths']} />
@@ -122,7 +123,7 @@ export default function App({ name }: AppProps) {
         <Container margin="0 auto" width="900px">
           <Title>
             <a id="recovered">
-              Recovered cases in {formatCountries(countries)}
+              Recovered cases in {formatCountries(countryNames)}
             </a>
           </Title>
           <GraphSummary data={data} types={['recovered']} />
@@ -136,22 +137,8 @@ export default function App({ name }: AppProps) {
           </Title>
           <Text>
             Data is fetched from{' '}
-            <Link href="https://github.com/CSSEGISandData/COVID-19">
-              Johns Hopkins University
-            </Link>
-            . A new request to their repository is made every 20 minutes. On the
-            question how often they update the repo they{' '}
-            <Link href="https://coronavirus.jhu.edu/map-faq.html">
-              answered
-            </Link>{' '}
-            -{' '}
-            <i>
-              <small>
-                "The GitHub database updates daily at around 11:59 p.m. UTC.
-                Occasional maintenance can result in slower updates"
-              </small>
-            </i>
-            .
+            <Link href="https://thevirustracker.com/">TheVirusTracker</Link>. A
+            new request to their API is made every 20 minutes.
           </Text>
           <Line />
           <Text padding="0">➡️ Get data for specific countries</Text>

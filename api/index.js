@@ -2,7 +2,8 @@ const fs = require('fs');
 const { parse } = require('url');
 const normalize = require('./normalizeData');
 
-const getData = require('./getData');
+// const getData = require('./getDataJHU');
+const getData = require('./getDataVirusTracker');
 
 function JSONResponse(res, data, status = 200) {
   res.setHeader('Content-Type', 'application/json');
@@ -53,20 +54,24 @@ module.exports = async function(req, res) {
   const countries = query.countries.split(',');
 
   try {
-    getData(query.noCache).then(data => {
-      if (data === null) {
-        JSONResponse(
-          res,
-          { error: 'Something went wrong while fetching data from JHU' },
-          500
-        );
-      } else {
-        JSONResponse(res, {
-          data: generateData(countries, data),
-          summary: getSummary(data),
-        });
-      }
-    });
+    getData(query.noCache)
+      .then(data => {
+        if (data === null) {
+          JSONResponse(
+            res,
+            { error: 'Something went wrong while fetching data.' },
+            500
+          );
+        } else {
+          JSONResponse(res, {
+            data: generateData(countries, data),
+            summary: getSummary(data),
+          });
+        }
+      })
+      .catch(err => {
+        JSONResponse(res, { error: err }, 500);
+      });
   } catch (err) {
     JSONResponse(res, { error: err }, err.status || 404);
   }
