@@ -1,7 +1,4 @@
-const parse = require('csv-parse');
 const countries = require('./countries.json');
-
-const getCSV = require('./getCSV');
 
 function JSONResponse(res, data, status = 200) {
   res.setHeader('Content-Type', 'application/json');

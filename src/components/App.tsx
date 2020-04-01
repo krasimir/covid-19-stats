@@ -137,9 +137,16 @@ export default function App({ name }: AppProps) {
           </Title>
           <Text>
             Data is fetched from{' '}
+            <Link href="https://github.com/CSSEGISandData/COVID-19">
+              Johns Hopkins University
+            </Link>
+            . A new request to their GitHub repository is made every 20 minutes.
+          </Text>
+          {/* <Text>
+            Data is fetched from{' '}
             <Link href="https://thevirustracker.com/">TheVirusTracker</Link>. A
             new request to their API is made every 20 minutes.
-          </Text>
+          </Text> */}
           <Line />
           <Text padding="0">➡️ Get data for specific countries</Text>
           <Code>/api?countries=&lt;countries></Code>

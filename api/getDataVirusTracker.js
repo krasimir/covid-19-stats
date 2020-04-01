@@ -31,6 +31,8 @@ module.exports = function getData(noCache) {
       .end((err, data) => {
         if (err) {
           console.log(err);
+          memCache.data = null;
+          memCache.lastUpdate = null;
           return processDone(null);
         }
         memCache.lastUpdate = new Date().getTime();

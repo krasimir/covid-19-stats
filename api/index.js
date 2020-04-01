@@ -3,8 +3,8 @@ const fs = require('fs');
 const { parse } = require('url');
 const normalize = require('./normalizeData');
 
-// const getData = require('./getDataJHU');
-const getData = require('./getDataVirusTracker');
+const getData = require('./getDataJHU');
+// const getData = require('./getDataVirusTracker');
 
 function JSONResponse(res, data, status = 200) {
   res.setHeader('Content-Type', 'application/json');
@@ -13,36 +13,23 @@ function JSONResponse(res, data, status = 200) {
   res.end(JSON.stringify(data));
 }
 
-function generateData(countries, data) {
-  const getAll = countries.length === 1 && countries[0] === 'all';
-  if (getAll) {
-    return Object.keys(data).map(country => normalize(country, data[country]));
-  }
-  return countries.map(c => {
-    const foundEntry = Object.keys(data).reduce((r, country) => {
-      if (r) return r;
-      if (country.toLowerCase() === c.toLowerCase()) {
-        return { country, data: data[country] };
-      }
-      return false;
-    }, false);
-
-    if (foundEntry) {
-      return normalize(foundEntry.country, foundEntry.data);
-    }
-    return null;
-  });
+function generateData(data) {
+  return Object.keys(data).map(country => normalize(country, data[country]));
 }
 
 function getSummary(data) {
   const total = { confirmed: 0, deaths: 0, recovered: 0 };
   Object.keys(data).forEach(country => {
-    const last = data[country][data[country].length - 1];
+    const last = data[country].dates[data[country].dates.length - 1];
     total.confirmed += last.confirmed;
     total.deaths += last.deaths;
     total.recovered += last.recovered;
   });
   return total;
+}
+
+function fixData(data) {
+  return data;
 }
 
 module.exports = async function(req, res) {
@@ -64,7 +51,7 @@ module.exports = async function(req, res) {
             500
           );
         } else {
-          const data = generateData(countries, rawData);
+          let data = generateData(rawData);
 
           // normalizing the missing dates
           const allDates = data
@@ -90,9 +77,17 @@ module.exports = async function(req, res) {
             });
           });
 
+          data = fixData(data);
+
+          const getAll = countries.length === 1 && countries[0] === 'all';
+          const lowerCaseCountryNames = countries.map(c => c.toLowerCase());
           JSONResponse(res, {
-            data,
-            summary: getSummary(rawData),
+            data: getAll
+              ? data
+              : data.filter(c =>
+                  lowerCaseCountryNames.includes(c.country.toLowerCase())
+                ),
+            summary: getSummary(data),
           });
         }
       })
